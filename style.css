@@ -72,3 +72,46 @@ body{
 .incorrect{
     background: #ff9393;
 }
+/* Highlight the user's current selection during the quiz */
+.selected-choice {
+    background: #e0e0e0 !important;
+    border: 2px solid #001e4d !important;
+}
+
+/* Analysis Styles */
+.analysis-item {
+    text-align: left;
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    background: #f9f9f9;
+}
+
+.correct-text {
+    color: #2e7d32; /* Green */
+    font-weight: 600;
+}
+
+.incorrect-text {
+    color: #d32f2f; /* Red */
+    font-weight: 600;
+}
+
+hr {
+    margin-top: 10px;
+    border: 0;
+    border-top: 1px solid #ccc;
+}
+
+#restart-btn {
+    background: rgb(12, 176, 23);
+    color: #fff;
+    width: 150px;
+    margin: 10px auto; /* Centers the button */
+    display: none;     /* Hidden by default */
+    text-align: center;
+}
+
+#restart-btn:hover {
+    background: #066405;
+}
