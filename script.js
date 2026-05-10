@@ -118,7 +118,7 @@ function showScore(){
     } else if (score >= questions.length / 2) {
         questionElement.innerHTML = `Good job! You scored ${score} out of ${questions.length} 👍`;
     } else {
-        questionElement.innerHTML = `Better luck next time! You scored ${score} out of ${questions.length} ✌️`;
+        questionElement.innerHTML = `Better luck next time! You scored ${score} out of ${questions.length} 😞`;
     }
     
     // 3. Show the buttons
