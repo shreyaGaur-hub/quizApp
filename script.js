@@ -40,14 +40,18 @@ const questions = [
 const questionElement = document.getElementById("question");
 const answerButtons = document.getElementById("answer-buttons");
 const nextButton = document.getElementById("next-btn");
+const restartButton = document.getElementById("restart-btn");
 
+let userAnswers = []; // This will store the index of the answer the user chose
 let currentQuestionIndex = 0;
 let score=0;
 
 function startQuiz() {
     currentQuestionIndex = 0;
     score = 0;
+    userAnswers = []; // Reset the user's previous answers
     nextButton.innerHTML = "Next";
+    restartButton.style.display = "none"; // Hide restart button when playing
     showQuestion();
 }
 
@@ -81,27 +85,71 @@ function resetState(){
 
 function selectAnswer(e){
     const selectedBtn = e.target;
-    const isCorrect = selectedBtn.dataset.correct === "true";
-    if(isCorrect){
-        selectedBtn.classList.add("correct");
-        score++;
-    } else {
-        selectedBtn.classList.add("incorrect");
-    }
+    
+    // Remove 'selected' class from all buttons to toggle highlight
     Array.from(answerButtons.children).forEach(button => {
-        if(button.dataset.correct === "true"){
-            button.classList.add("correct");
-        }
-        button.disabled = true;
+        button.classList.remove("selected-choice");
     });
+    
+    // Highlight the clicked one
+    selectedBtn.classList.add("selected-choice");
+
+    // Save the choice (index) for this specific question
+    const answerIndex = Array.from(answerButtons.children).indexOf(selectedBtn);
+    userAnswers[currentQuestionIndex] = answerIndex;
+
     nextButton.style.display = "block";
 }
 
 function showScore(){
     resetState();
-    questionElement.innerHTML = `You scored ${score} out of ${questions.length}!`;
-    nextButton.innerHTML = "Play Again";
+    
+    // 1. Calculate the score
+    score = 0;
+    questions.forEach((question, index) => {
+        if(userAnswers[index] !== undefined && question.answers[userAnswers[index]].correct){
+            score++;
+        }
+    });
+
+    // 2. Check for a perfect score
+    if (score === questions.length) {
+        questionElement.innerHTML = `Huray! Perfect score! 🥳`;
+    } else if (score >= questions.length / 2) {
+        questionElement.innerHTML = `Good job! You scored ${score} out of ${questions.length} 👍`;
+    } else {
+        questionElement.innerHTML = `Better luck next time! You scored ${score} out of ${questions.length} ✌️`;
+    }
+    
+    // 3. Show the buttons
+    nextButton.innerHTML = "View Analysis";
     nextButton.style.display = "block";
+    restartButton.style.display = "block";
+}
+
+function showAnalysis() {
+    resetState();
+    questionElement.innerHTML = "Quiz Analysis";
+    
+    questions.forEach((question, index) => {
+        const qDiv = document.createElement("div");
+        qDiv.classList.add("analysis-item");
+        
+        const userChoice = question.answers[userAnswers[index]];
+        const correctChoice = question.answers.find(a => a.correct);
+        
+        qDiv.innerHTML = `
+            <p><strong>Q${index + 1}: ${question.question}</strong></p>
+            <p class="${userChoice.correct ? 'correct-text' : 'incorrect-text'}">
+                Your Answer: ${userChoice.text}
+            </p>
+            ${!userChoice.correct ? `<p class="correct-text">Correct Answer: ${correctChoice.text}</p>` : ''}
+            <hr>
+        `;
+        answerButtons.appendChild(qDiv);
+    });
+
+    nextButton.innerHTML = "Restart Quiz";
 }
 
 function handleNextButton(){
@@ -116,9 +164,13 @@ function handleNextButton(){
 nextButton.addEventListener("click", () => {
     if(currentQuestionIndex < questions.length){
         handleNextButton();
-    }else{
+    } else if (nextButton.innerHTML === "View Analysis") {
+        showAnalysis();
+    } else {
         startQuiz();
     }
 });
+
+restartButton.addEventListener("click", startQuiz);
 
 startQuiz();
